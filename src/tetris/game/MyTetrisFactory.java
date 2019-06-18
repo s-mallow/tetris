@@ -3,6 +3,7 @@ package tetris.game;
 import java.util.Random;
 
 import tetris.autoplay.AutoPlayer;
+import tetris.game.pieces.PFactoryImplementation;
 import tetris.game.pieces.PieceFactory;
 
 public class MyTetrisFactory {
@@ -37,8 +38,7 @@ public class MyTetrisFactory {
 	 *            the random number generator to use for the PieceFactory.
 	 */
 	static public PieceFactory createPieceFactory(Random r) {
-		// TODO Complete implementation
-		throw new UnsupportedOperationException();
+		return new PFactoryImplementation(r);
 	}
 
 	/**
@@ -50,8 +50,7 @@ public class MyTetrisFactory {
 	 *            the number of columns
 	 */
 	static public Board createBoard(int rows, int columns) {
-		// TODO Complete implementation
-		throw new UnsupportedOperationException();
+		return new BImplementation(rows, columns);
 	}
 
 	/**
