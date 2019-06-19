@@ -49,8 +49,10 @@ public class BImplementation implements Board {
 
 	@Override
 	public boolean canAddPiece(Piece piece, int row, int column) {
+		if (piece == null)
+			return false;
 		Point point = piece.getRotationPoint();
-		if (point == null || row - point.getRow() < 0 || column - point.getColumn() < 0
+		if (row - point.getRow() < 0 || column - point.getColumn() < 0
 				|| row + ((piece.getHeight() - 1) - point.getRow()) >= getNumberOfRows()
 				|| column + ((piece.getWidth() - 1) - point.getColumn()) >= getNumberOfColumns())
 			return false;
@@ -81,8 +83,10 @@ public class BImplementation implements Board {
 
 	@Override
 	public boolean canRemovePiece(Piece piece, int row, int column) {
+		if (piece == null)
+			return false;
 		Point point = piece.getRotationPoint();
-		if (point == null || row - point.getRow() < 0 || column - point.getColumn() < 0
+		if (row - point.getRow() < 0 || column - point.getColumn() < 0
 				|| row + ((piece.getHeight() - 1) - point.getRow()) >= getNumberOfRows()
 				|| column + ((piece.getWidth() - 1) - point.getColumn()) >= getNumberOfColumns())
 			return false;
