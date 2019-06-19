@@ -6,9 +6,9 @@ import tetris.game.pieces.Point;
 
 public class BImplementation implements Board {
 
-	private PieceType[][] board;
+	private final PieceType[][] board;
 
-	public BImplementation(int rows, int columns) {
+	public BImplementation(int rows, int columns) {//TODO assert row,column > 0
 		board = new PieceType[rows][columns];
 	}
 	
@@ -30,8 +30,6 @@ public class BImplementation implements Board {
 
 	@Override
 	public int getNumberOfColumns() {
-		if (board.length < 1) // TODO implement width field?
-			return 0;
 		return board[0].length;
 	}
 
@@ -116,7 +114,7 @@ public class BImplementation implements Board {
 
 	private void shiftDown(int itrow) {
 		for(int i = itrow;i > 0; i--)
-			board[itrow] = board[itrow-1];
+			board[i] = board[i-1];
 		board[0] = new PieceType[getNumberOfColumns()];
 	}
 

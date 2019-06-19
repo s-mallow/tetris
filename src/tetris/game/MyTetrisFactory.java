@@ -27,8 +27,7 @@ public class MyTetrisFactory {
 	 *            the random number generator to use for the PieceFactory.
 	 */
 	static public TetrisGame createTetrisGame(Random r) {
-		// TODO Complete implementation
-		throw new UnsupportedOperationException();
+		return new TGameImplementation(r);
 	}
 
 	/**
