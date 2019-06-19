@@ -8,13 +8,13 @@ public class BImplementation implements Board {
 
 	private final PieceType[][] board;
 
-	public BImplementation(int rows, int columns) {//TODO assert row,column > 0
+	public BImplementation(int rows, int columns) {// TODO assert row,column > 0
 		board = new PieceType[rows][columns];
 	}
-	
+
 	private BImplementation(BImplementation oldboard) {
 		board = new PieceType[oldboard.getNumberOfRows()][];
-		for(int i = 0; i<board.length; i++)
+		for (int i = 0; i < board.length; i++)
 			board[i] = oldboard.board[i].clone();
 	}
 
@@ -50,7 +50,7 @@ public class BImplementation implements Board {
 	@Override
 	public boolean canAddPiece(Piece piece, int row, int column) {
 		Point point = piece.getRotationPoint();
-		if (row - point.getRow() < 0 || column - point.getColumn() < 0
+		if (point == null || row - point.getRow() < 0 || column - point.getColumn() < 0
 				|| row + ((piece.getHeight() - 1) - point.getRow()) >= getNumberOfRows()
 				|| column + ((piece.getWidth() - 1) - point.getColumn()) >= getNumberOfColumns())
 			return false;
@@ -82,7 +82,7 @@ public class BImplementation implements Board {
 	@Override
 	public boolean canRemovePiece(Piece piece, int row, int column) {
 		Point point = piece.getRotationPoint();
-		if (row - point.getRow() < 0 || column - point.getColumn() < 0
+		if (point == null || row - point.getRow() < 0 || column - point.getColumn() < 0
 				|| row + ((piece.getHeight() - 1) - point.getRow()) >= getNumberOfRows()
 				|| column + ((piece.getWidth() - 1) - point.getColumn()) >= getNumberOfColumns())
 			return false;
@@ -101,10 +101,10 @@ public class BImplementation implements Board {
 	public int deleteCompleteRows() {
 		int removed = 0;
 		for (int itrow = 0; itrow < getNumberOfRows(); itrow++)
-			for(int itcolumn = 0; itcolumn < getNumberOfColumns(); itcolumn++) {
-				if(board[itrow][itcolumn] == null)
+			for (int itcolumn = 0; itcolumn < getNumberOfColumns(); itcolumn++) {
+				if (board[itrow][itcolumn] == null)
 					break;
-				if(itcolumn+1 == getNumberOfColumns()) {
+				if (itcolumn + 1 == getNumberOfColumns()) {
 					shiftDown(itrow);
 					removed++;
 				}
@@ -113,8 +113,8 @@ public class BImplementation implements Board {
 	}
 
 	private void shiftDown(int itrow) {
-		for(int i = itrow;i > 0; i--)
-			board[i] = board[i-1];
+		for (int i = itrow; i > 0; i--)
+			board[i] = board[i - 1];
 		board[0] = new PieceType[getNumberOfColumns()];
 	}
 

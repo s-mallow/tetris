@@ -1,16 +1,11 @@
 package tetris.game;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import tetris.game.pieces.PFactoryImplementation;
 import tetris.game.pieces.Piece;
 import tetris.game.pieces.PieceFactory;
-import tetris.game.pieces.Point;
 
 public class TGameImplementation implements TetrisGame {
 
