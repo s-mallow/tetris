@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class Gene implements Serializable {
 
-	private final double rows, height, holes, bump;
+	private final double rows, height, holes, bump, touch;
 	private final int generation;
 	private int score;
 
@@ -25,15 +25,17 @@ public class Gene implements Serializable {
 		height = (ra.nextDouble() - 0.5) * 2;
 		holes = (ra.nextDouble() - 0.5) * 2;
 		bump = (ra.nextDouble() - 0.5) * 2;
+		touch = (ra.nextDouble() - 0.5) * 2;
 		generation = 0;
 	}
 
-	private Gene(double rows, double height, double holes, double bump, int generation) {
+	private Gene(double rows, double height, double holes, double bump, double touch, int generation) {
 		this.ra = new Random();
 		this.rows = rows;
 		this.height = height;
 		this.holes = holes;
 		this.bump = bump;
+		this.touch = touch;
 		this.generation = generation;
 	}
 
@@ -55,7 +57,7 @@ public class Gene implements Serializable {
 
 	public Gene breed(Gene other, int generation) {
 		return new Gene(combineChromosome(rows, other.rows), combineChromosome(height, other.height),
-				combineChromosome(holes, other.holes), combineChromosome(bump, other.bump), generation);
+				combineChromosome(holes, other.holes), combineChromosome(bump, other.bump), combineChromosome(touch, other.touch), generation);
 	}
 
 	private double combineChromosome(double chr1, double chr2) {
@@ -67,6 +69,10 @@ public class Gene implements Serializable {
 
 	public int getGeneration() {
 		return generation;
+	}
+
+	public double getTouch() {
+		return touch;
 	}
 
 }

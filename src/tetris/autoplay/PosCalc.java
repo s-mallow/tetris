@@ -31,7 +31,7 @@ public class PosCalc {
 		Random ra = new Random();
 		for (int i = 0; i < 100; i++)
 			genescore.add(new Gene());
-		for (int gen = 0; gen < 100; gen++) {
+		for (int gen = 0; gen < 10; gen++) {
 			List<Long> seeds = new ArrayList<>();
 			for (int games = 0; games < 10; games++)
 				seeds.add(ra.nextLong());
@@ -69,7 +69,7 @@ public class PosCalc {
 			genescore.sort((Gene g1, Gene g2) -> Integer.compare(g2.getScore(), g1.getScore()));
 			System.out.println("Best Gene Generation " + gen + ": " + genescore.get(0).getRows() + " "
 					+ genescore.get(0).getHeight() + " " + genescore.get(0).getHoles() + " "
-					+ genescore.get(0).getBump() + " with Score " + genescore.get(0).getScore() + " from Generation "
+					+ genescore.get(0).getBump() + " " + genescore.get(0).getTouch() + " with Score " + genescore.get(0).getScore() + " from Generation "
 					+ genescore.get(0).getGeneration());
 			for (int i = 0; i < 30; i++) {
 				List<Gene> randoms = new ArrayList<>();
@@ -88,7 +88,7 @@ public class PosCalc {
 		for(int i = 0; i < 30; i++)
 		System.out.println(i + ": " + genescore.get(i).getRows() + " "
 				+ genescore.get(i).getHeight() + " " + genescore.get(i).getHoles() + " "
-				+ genescore.get(i).getBump() + " with Score " + genescore.get(i).getScore() + " from Generation "
+				+ genescore.get(i).getBump() + " " + genescore.get(0).getTouch() + " with Score " + genescore.get(i).getScore() + " from Generation "
 				+ genescore.get(i).getGeneration());
 		try {
 			System.out.println(toString((Serializable)genescore));
@@ -169,10 +169,11 @@ public class PosCalc {
 			i++;
 		Board tempboard = board.clone();
 		tempboard.addPiece(piece, i - 1, column);
-		double score = tempboard.deleteCompleteRows() * 0.07575515363489922;
-		score += getHighestHeight(tempboard) * -0.03446169192540163;
-		score += getHoles(tempboard) * -0.6719033528997505;
-		score += getBump(tempboard) * -0.09707746932098558;
+		double score = tempboard.deleteCompleteRows() * currentgene.getRows();
+		score += getHighestHeight(tempboard) * currentgene.getHeight();
+		score += getHoles(tempboard) * currentgene.getHoles();
+		score += getBump(tempboard) * currentgene.getBump();
+		score += walltouches(tempboard) * currentgene.getTouch();
 		scores.add(new Goal(column, rotation, score, board.getNumberOfColumns()));
 	}
 
@@ -209,6 +210,17 @@ public class PosCalc {
 					return board.getNumberOfRows() - i;
 				}
 		return 0;
+	}
+	
+	private static int walltouches(Board board) {
+		int sum = 0;
+		for(int i = 0; i < board.getBoard().length; i++) {
+			if(board.getBoard()[i][0] != null)
+				sum++;
+			if(board.getBoard()[i][board.getBoard()[0].length-1] != null)
+				sum++;
+		}
+		return sum;
 	}
 
 	private static double getAverageHeight(Board board) {
