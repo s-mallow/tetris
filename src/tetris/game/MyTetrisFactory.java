@@ -2,6 +2,7 @@ package tetris.game;
 
 import java.util.Random;
 
+import tetris.autoplay.APlayerImplementation;
 import tetris.autoplay.AutoPlayer;
 import tetris.game.pieces.PFactoryImplementation;
 import tetris.game.pieces.PieceFactory;
@@ -59,7 +60,6 @@ public class MyTetrisFactory {
 	 *            the game for which the AutoPlayer should provide moves
 	 */
 	static public AutoPlayer createAutoPlayer(TetrisGameView game) {
-		// TODO Complete implementation
-		throw new UnsupportedOperationException();
+		return new APlayerImplementation(game);
 	}
 }
