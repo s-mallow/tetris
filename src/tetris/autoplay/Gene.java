@@ -4,10 +4,16 @@ import java.io.Serializable;
 import java.util.Random;
 
 public class Gene implements Serializable {
-
-	private final double rows, height, holes, bump, touch;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8809437431149250481L;
+	private final double[] features;
 	private final int generation;
 	private int score;
+	
+	private static final int NOFEATURES = 6;
 
 	public int getScore() {
 		return score;
@@ -21,58 +27,38 @@ public class Gene implements Serializable {
 
 	public Gene() {
 		ra = new Random();
-		rows = (ra.nextDouble() - 0.5) * 2;
-		height = (ra.nextDouble() - 0.5) * 2;
-		holes = (ra.nextDouble() - 0.5) * 2;
-		bump = (ra.nextDouble() - 0.5) * 2;
-		touch = (ra.nextDouble() - 0.5) * 2;
+		features = new double[NOFEATURES];
+		for(int i = 0; i < features.length; i++)
+			features[i] = (ra.nextDouble() - 0.5) * 2;
 		generation = 0;
 	}
 
-	private Gene(double rows, double height, double holes, double bump, double touch, int generation) {
+	private Gene(double[] features, int generation) {
 		this.ra = new Random();
-		this.rows = rows;
-		this.height = height;
-		this.holes = holes;
-		this.bump = bump;
-		this.touch = touch;
+		this.features = features;
 		this.generation = generation;
 	}
-
-	public double getRows() {
-		return rows;
-	}
-
-	public double getHeight() {
-		return height;
-	}
-
-	public double getHoles() {
-		return holes;
-	}
-
-	public double getBump() {
-		return bump;
+	
+	public double[] getFeatures() {
+		return features;
 	}
 
 	public Gene breed(Gene other, int generation) {
-		return new Gene(combineChromosome(rows, other.rows), combineChromosome(height, other.height),
-				combineChromosome(holes, other.holes), combineChromosome(bump, other.bump), combineChromosome(touch, other.touch), generation);
+		double[] newfeatures = new double[NOFEATURES];
+		for(int i = 0; i < features.length; i++)
+			newfeatures[i] = combineChromosome(features[i], other.features[i], score, other.score);
+		return new Gene(newfeatures, generation);
 	}
 
-	private double combineChromosome(double chr1, double chr2) {
+	private double combineChromosome(double chr1, double chr2, double score1, double score2) {
 		if (ra.nextDouble() < 0.1)
 			return (ra.nextDouble() - 0.5) * 2;
 		else
-			return (chr2 + chr1) / 2;
+			return chr1 * (score1 / (score1 + score2)) + chr2 * (score2 / (score1 + score2));
 	}
 
 	public int getGeneration() {
 		return generation;
-	}
-
-	public double getTouch() {
-		return touch;
 	}
 
 }
