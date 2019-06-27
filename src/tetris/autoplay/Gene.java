@@ -13,7 +13,7 @@ public class Gene implements Serializable {
 	private final int generation;
 	private int score;
 	
-	private static final int NOFEATURES = 6;
+	public static final int NOFEATURES = 6;
 
 	public int getScore() {
 		return score;
@@ -53,8 +53,10 @@ public class Gene implements Serializable {
 	private double combineChromosome(double chr1, double chr2, double score1, double score2) {
 		if (ra.nextDouble() < 0.1)
 			return (ra.nextDouble() - 0.5) * 2;
+		else if (ra.nextDouble() < 0.5)
+			return chr1;
 		else
-			return chr1 * (score1 / (score1 + score2)) + chr2 * (score2 / (score1 + score2));
+			return chr2;
 	}
 
 	public int getGeneration() {
