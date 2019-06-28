@@ -12,8 +12,9 @@ public class Gene implements Serializable {
 	private final double[] features;
 	private final int generation;
 	private int score;
+	private int pointscore;
 	
-	public static final int NOFEATURES = 6;
+	public static final int NOFEATURES = 9;
 
 	public int getScore() {
 		return score;
@@ -61,6 +62,14 @@ public class Gene implements Serializable {
 
 	public int getGeneration() {
 		return generation;
+	}
+
+	public int getPointscore() {
+		return pointscore;
+	}
+
+	public void setPointscore(int pointscore) {
+		this.pointscore = pointscore;
 	}
 
 }

@@ -12,19 +12,27 @@ public class APlayerImplementation implements GameObserver, AutoPlayer {
 	private Integer goalcol;
 	private int movecolsrot;
 	private boolean movecompleted;
+	public PosCalc calc;
+	public int playedpieces;
 
 	public APlayerImplementation(TetrisGameView game) {
 		this.game = game;
 		this.movecompleted = true;
 		game.addObserver(this);
+		calc = new PosCalc();
+		playedpieces = 0;
+	}
+	
+	public void setGene(Gene g) {
+		calc.setGene(g);
 	}
 
 	@Override
 	public Move getMove() {
 		if (movecompleted) {
-			PosCalc.calcNext(game);
-			goalrot = PosCalc.getRotation();
-			goalcol = PosCalc.getColumn();
+			calc.calcNext(game);
+			goalrot = calc.getRotation();
+			goalcol = calc.getColumn();
 			movecompleted = false;
 		}
 		if (goalrot == null) {
@@ -126,6 +134,7 @@ public class APlayerImplementation implements GameObserver, AutoPlayer {
 	@Override
 	public void pieceLanded() {
 		movecompleted = true;
+		playedpieces++;
 	}
 
 	@Override
