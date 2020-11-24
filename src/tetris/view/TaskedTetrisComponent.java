@@ -32,17 +32,24 @@ public abstract class TaskedTetrisComponent extends TetrisComponent {
 	 * The minimal delay.
 	 */
 	private double minDelay;
-	boolean bla;
 
 	public TaskedTetrisComponent(TetrisGame game, String msg, double delay, double delayOffset, double minDelay) {
 		super(game, msg);
 		this.delay = delay;
 		this.minDelay = minDelay;
 		this.delayOffset = delayOffset;
-		bla = true;
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		if (delay >= 0)
-			resetTimer();
+		if (delay >= 0) {
+			timer.schedule(new TimerTask(){ 
+				public void run() {
+			resetTimer();}}, 1000);
+		}
 	}
 
 	private final class IndirectTask extends TimerTask {
@@ -52,14 +59,6 @@ public abstract class TaskedTetrisComponent extends TetrisComponent {
 				return;
 			if (getGame().isGameOver())
 				return;
-			if (bla)
-				try {
-					Thread.sleep(1000);
-					bla = false;
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			execute();
 			adjustDelayAndResetTimer();
 		}

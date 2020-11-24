@@ -1,150 +1,85 @@
 package tetris.autoplay;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.jar.JarException;
+
 import tetris.game.Board;
 import tetris.game.GameObserver;
 import tetris.game.TetrisGameView;
 import tetris.game.pieces.Piece;
+import tetris.game.pieces.Piece.PieceType;
 
-public class APlayerImplementation implements GameObserver, AutoPlayer {
+public class APlayerImplementation implements AutoPlayer, GameObserver {
 
 	private final TetrisGameView game;
-	private Rotate goalrot;
-	private Integer goalcol;
-	private int movecolsrot;
-	private boolean movecompleted;
-	public PosCalc calc;
-	public int playedpieces;
+	private long oldpoints;
+	private double nextreward;
+	private int turnssamepiece = 0;
+	private boolean down;
 
 	public APlayerImplementation(TetrisGameView game) {
 		this.game = game;
-		this.movecompleted = true;
 		game.addObserver(this);
-		calc = new PosCalc();
-		playedpieces = 0;
-	}
-	
-	public void setGene(Gene g) {
-		calc.setGene(g);
-	}
-
-	@Override
-	public Move getMove() {
-		if (movecompleted) {
-			calc.calcNext(game);
-			goalrot = calc.getRotation();
-			goalcol = calc.getColumn();
-			movecompleted = false;
-		}
-		if (goalrot == null) {
-			if (goalcol == game.getPieceColumn())
-				return Move.DOWN;
-			if (goalcol < game.getPieceColumn())
-				return Move.LEFT;
-			else
-				return Move.RIGHT;
-		}
-		if (movecolsrot == 0)
-			return rotate();
-		if (movecolsrot < 0) {
-			movecolsrot++;
-			return Move.LEFT;
-		}
-		movecolsrot--;
-		return Move.RIGHT;
-
-	}
-
-	private Move rotate() {
-		Board board = game.getBoardCopy();
-		Piece piece = game.getCurrentPieceCopy();
-		board.removePiece(piece, game.getPieceRow(), game.getPieceColumn());
-		if (canRotate(game.getPieceColumn())) {
-			switch (goalrot) {
-			case CCW:
-				goalrot = null;
-				return Move.ROTATE_CCW;
-			case CW:
-				goalrot = null;
-				return Move.ROTATE_CW;
-			case MIRROR:
-				if (board.canAddPiece(piece.getClockwiseRotation(), game.getPieceRow(), game.getPieceColumn())
-						&& board.canAddPiece(piece.getClockwiseRotation().getClockwiseRotation(), game.getPieceRow(),
-								game.getPieceColumn())) {
-					goalrot = Rotate.CW;
-					return Move.ROTATE_CW;
-				}
-				goalrot = Rotate.CCW;
-				return Move.ROTATE_CCW;
-			}
-		}
-		for (int i = goalcol < game.getPieceColumn() ? -1 : 1; board.canAddPiece(piece, 2,
-				game.getPieceColumn() + i); i += goalcol < game.getPieceColumn() ? -1 : 1)
-			if (canRotate(game.getPieceColumn() + i)) {
-				movecolsrot = i;
-				break;
-			}
-		if (movecolsrot == 0)
-			for (int i = goalcol < game.getPieceColumn() ? 1 : -1; board.canAddPiece(piece, 2,
-					game.getPieceColumn() + i); i += goalcol < game.getPieceColumn() ? 1 : -1)
-				if (canRotate(game.getPieceColumn() + i)) {
-					movecolsrot = i;
-					break;
-				}
-		if (movecolsrot < 0) {
-			movecolsrot++;
-			return Move.LEFT;
-		}
-		movecolsrot--;
-		return Move.RIGHT;
-	}
-
-	private boolean canRotate(int i) {
-		Board board = game.getBoardCopy();
-		Piece piece = game.getCurrentPieceCopy();
-		board.removePiece(piece, game.getPieceRow(), game.getPieceColumn());
-		if (board.canAddPiece(piece.getClockwiseRotation(), 2, i)) {
-			if (goalrot == Rotate.CW)
-				return true;
-			else if (goalrot == Rotate.MIRROR
-					&& board.canAddPiece(piece.getClockwiseRotation().getClockwiseRotation(), 2, i))
-				return true;
-		}
-		if (board.canAddPiece(piece.getCounterClockwiseRotation(), 2, i)) {
-			if (goalrot == Rotate.CCW)
-				return true;
-			else if (goalrot == Rotate.MIRROR && board.canAddPiece(
-					piece.getCounterClockwiseRotation().getCounterClockwiseRotation(), 2, i))
-				return true;
-		}
-		return false;
+		nextreward = 0;
+		oldpoints = 0;
+		down = false;
 	}
 
 	@Override
 	public void rowsCompleted() {
-		// TODO Auto-generated method stub
-
+//		System.out.println(game.getPoints() - oldpoints);
+		nextreward += (game.getPoints() - oldpoints) / 100;
+		oldpoints = game.getPoints();
 	}
 
 	@Override
 	public void piecePositionChanged() {
-		// TODO Auto-generated method stub
-
+		turnssamepiece++;
+		if (turnssamepiece > 100)
+			nextreward -= 10;
 	}
 
 	@Override
 	public void pieceLanded() {
-		movecompleted = true;
-		playedpieces++;
+		down = false;
+		turnssamepiece = 0;
 	}
 
 	@Override
 	public void gameOver() {
-		// TODO Auto-generated method stub
-
+		QManager.gameOver(nextreward - 100);
 	}
 
-	public enum Rotate {
-		CW, CCW, MIRROR;
+	@Override
+	public Move getMove() {
+		if(down)
+			return Move.DOWN;
+		Board board = game.getBoardCopy();
+		Piece piece = game.getCurrentPieceCopy();
+		boolean[][] boolboard = new boolean[board.getNumberOfRows()][board.getNumberOfColumns()];
+		int startingrow = game.getPieceRow() - piece.getRotationPoint().getRow() + piece.getHeight();
+		for (int i = startingrow; i < board.getBoard().length; i++) {
+			PieceType[] row = board.getBoard()[i];
+			for (int i2 = 0; i2 < row.length; i2++)
+				boolboard[i][i2] = row[i2] == null ? false : true;
+		}
+		board.removePiece(piece, game.getPieceRow(), game.getPieceColumn());
+		List<Move> avmoves = new ArrayList<>();
+		avmoves.add(Move.DOWN);
+		if (board.canAddPiece(piece, game.getPieceRow(), game.getPieceColumn() + 1))
+			avmoves.add(Move.RIGHT);
+		if (board.canAddPiece(piece, game.getPieceRow(), game.getPieceColumn() - 1))
+			avmoves.add(Move.LEFT);
+		if (board.canAddPiece(piece.getClockwiseRotation(), game.getPieceRow(), game.getPieceColumn()))
+			avmoves.add(Move.ROTATE_CW);
+		if (board.canAddPiece(piece.getCounterClockwiseRotation(), game.getPieceRow(), game.getPieceColumn()))
+			avmoves.add(Move.ROTATE_CCW);
+		Move nextmove = QManager.getNextMove(avmoves.toArray(Move[]::new), new State(boolboard, game.getPieceRow(), game.getPieceColumn(), piece.getPieceType()), nextreward);
+		nextreward = 0;
+		if (nextmove == Move.DOWN)
+			down = true;
+		return nextmove;
 	}
 
 }
