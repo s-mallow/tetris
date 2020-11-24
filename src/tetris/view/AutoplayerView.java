@@ -14,12 +14,12 @@ import tetris.game.TetrisGameView;
 @SuppressWarnings("serial")
 public class AutoplayerView extends TaskedTetrisComponent {
 
-	private static final long SEED = 2372;
+	private static final long SEED = new Random().nextLong();
 
 	private final AutoPlayer autoPlayer;
 
 	public AutoplayerView(TetrisGame game, String msg) {
-		super(game, msg, 20, 0, 20);
+		super(game, msg, 0.1, 0, 0.1);
 		this.autoPlayer = MyTetrisFactory.createAutoPlayer(new TetrisGameView(game));
 	}
 
