@@ -19,7 +19,7 @@ public class AutoplayerView extends TaskedTetrisComponent {
 	private final AutoPlayer autoPlayer;
 
 	public AutoplayerView(TetrisGame game, String msg) {
-		super(game, msg, 0.1, 0, 0.1);
+		super(game, msg, 1, 0, 1);
 		this.autoPlayer = MyTetrisFactory.createAutoPlayer(new TetrisGameView(game));
 	}
 
